@@ -39,7 +39,8 @@ If this Linux server were migrated to the cloud, equivalent virtual-machine serv
 | GCP | Compute Engine |
 
 > Add your terminal screenshot here:
-> `![KillerCoda Terminal](screenshots/killercoda-terminal.png)`
+> `<img width="1920" height="1834" alt="killercoda-terminal" src="https://github.com/user-attachments/assets/6ebd3c8a-7f38-47a5-8261-02e3b6d227a9" />
+`
 
 ## Screenshots
 Add the required screenshots to the `screenshots` folder before submission.
