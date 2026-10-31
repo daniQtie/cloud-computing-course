@@ -1,0 +1,53 @@
+version: "3.9"
+
+# =============================================================================
+# CloudNova Technologies — Multi-tier stack
+# web (Next.js) + db (PostgreSQL 16) with persistent storage
+# =============================================================================
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: cloudnova_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cloudnova}
+      POSTGRES_USER: ${POSTGRES_USER:-cloudnova_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_2026}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    image: cloudnova-web:1.0
+    container_name: cloudnova_web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-cloudnova_admin}:${POSTGRES_PASSWORD:-ChangeMe_2026}@db:5432/${POSTGRES_DB:-cloudnova}
+    networks:
+      - backend
+      - frontend
+
+volumes:
+  pg_data:
+    driver: local
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 22px; font-weight: 700; fill: #0b2545; }
+      .sub   { font-size: 13px; fill: #334; }
+      .lbl   { font-size: 13px; font-weight: 600; fill: #0b2545; }
+      .small { font-size: 11px; fill: #334; }
+      .host  { fill: #eef3fb; stroke: #0b2545; stroke-width: 2; }
+      .hyp   { fill: #fff4e0; stroke: #c47a00; stroke-width: 2; stroke-dasharray: 6 4; }
+      .vm    { fill: #e6f7ee; stroke: #0f7a3a; stroke-width: 2; }
+      .fw    { fill: #ffe3e3; stroke: #a40000; stroke-width: 2; }
+      .docker{ fill: #e0f0ff; stroke: #005b96; stroke-width: 2; }
+      .ctr   { fill: #ffffff; stroke: #005b96; stroke-width: 1.5; }
+      .vol   { fill: #fdf2d0; stroke: #a07500; stroke-width: 1.5; }
+      .arrow { fill: none; stroke: #0b2545; stroke-width: 1.8; marker-end: url(#head); }
+      .deny  { stroke: #a40000; }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#0b2545"/>
+    </marker>
+  </defs>
+
+  <text x="550" y="34" class="title" text-anchor="middle">CloudNova Technologies — Enterprise Cloud Architecture</text>
+  <text x="550" y="54" class="sub"   text-anchor="middle">Multi-tier WordPress + MySQL on Ubuntu Server VM, hardened with UFW, automated via Cron</text>
+
+  <!-- HOST -->
+  <rect x="30" y="80" width="1040" height="610" rx="14" class="host"/>
+  <text x="50" y="105" class="lbl">Host Machine (Windows 10 Laptop)</text>
+  <text x="50" y="122" class="small">Browser: http://192.168.56.10:8080  •  SSH: ssh admin@192.168.56.10</text>
+
+  <!-- Browser icon -->
+  <rect x="60" y="150" width="170" height="80" rx="8" fill="#fff" stroke="#0b2545"/>
+  <text x="145" y="180" text-anchor="middle" class="lbl">Web Browser</text>
+  <text x="145" y="200" text-anchor="middle" class="small">Chrome / Firefox</text>
+  <text x="145" y="218" text-anchor="middle" class="small">:8080 HTTP</text>
+
+  <!-- SSH client -->
+  <rect x="60" y="250" width="170" height="70" rx="8" fill="#fff" stroke="#0b2545"/>
+  <text x="145" y="278" text-anchor="middle" class="lbl">SSH Client</text>
+  <text x="145" y="298" text-anchor="middle" class="small">PuTTY / OpenSSH :22</text>
+
+  <!-- HYPERVISOR -->
+  <rect x="270" y="140" width="770" height="520" rx="12" class="hyp"/>
+  <text x="290" y="165" class="lbl">Type-2 Hypervisor (VirtualBox / VMware)</text>
+
+  <!-- UFW FIREWALL -->
+  <rect x="300" y="190" width="710" height="60" rx="8" class="fw"/>
+  <text x="320" y="212" class="lbl">UFW Firewall — Default DENY (incoming)</text>
+  <text x="320" y="232" class="small">ALLOW 22/tcp (SSH)   •   ALLOW 8080/tcp (HTTP)   •   DENY everything else</text>
+
+  <!-- VM -->
+  <rect x="300" y="270" width="710" height="370" rx="12" class="vm"/>
+  <text x="320" y="295" class="lbl">Ubuntu Server VM — 192.168.56.10</text>
+  <text x="320" y="312" class="small">Bridged / Host-only adapter  •  Docker Engine + Docker Compose  •  cron, bash, curl</text>
+
+  <!-- DOCKER NETWORKS -->
+  <rect x="330" y="330" width="660" height="290" rx="10" class="docker"/>
+  <text x="350" y="355" class="lbl">Docker Engine</text>
+  <text x="350" y="372" class="small">bridge network: cloudnova_frontend + cloudnova_backend</text>
+
+  <!-- WORDPRESS CONTAINER -->
+  <rect x="360" y="395" width="260" height="130" rx="10" class="ctr"/>
+  <text x="490" y="420" text-anchor="middle" class="lbl">cloudnova_wp</text>
+  <text x="490" y="440" text-anchor="middle" class="small">wordpress:6.5-apache</text>
+  <text x="490" y="458" text-anchor="middle" class="small">Port 80 → host :8080</text>
+  <text x="490" y="476" text-anchor="middle" class="small">Volume: wp_data → /var/www/html</text>
+  <text x="490" y="494" text-anchor="middle" class="small">Networks: frontend + backend</text>
+
+  <!-- MYSQL CONTAINER -->
+  <rect x="700" y="395" width="260" height="130" rx="10" class="ctr"/>
+  <text x="830" y="420" text-anchor="middle" class="lbl">cloudnova_db</text>
+  <text x="830" y="440" text-anchor="middle" class="small">mysql:8.0</text>
+  <text x="830" y="458" text-anchor="middle" class="small">Port 3306 (internal only)</text>
+  <text x="830" y="476" text-anchor="middle" class="small">Volume: db_data → /var/lib/mysql</text>
+  <text x="830" y="494" text-anchor="middle" class="small">Network: backend</text>
+
+  <!-- Persistent volumes -->
+  <rect x="360" y="545" width="260" height="55" rx="8" class="vol"/>
+  <text x="490" y="567" text-anchor="middle" class="lbl">Persistent Volume: wp_data</text>
+  <text x="490" y="585" text-anchor="middle" class="small">survives container &amp; VM reboot</text>
+
+  <rect x="700" y="545" width="260" height="55" rx="8" class="vol"/>
+  <text x="830" y="567" text-anchor="middle" class="lbl">Persistent Volume: db_data</text>
+  <text x="830" y="585" text-anchor="middle" class="small">survives container &amp; VM reboot</text>
+
+  <!-- Cron / backup -->
+  <rect x="60" y="420" width="170" height="130" rx="8" fill="#fff" stroke="#0b2545"/>
+  <text x="145" y="445" text-anchor="middle" class="lbl">Cron Job</text>
+  <text x="145" y="465" text-anchor="middle" class="small">02:00 daily</text>
+  <text x="145" y="483" text-anchor="middle" class="small">automation-script.sh</text>
+  <text x="145" y="505" text-anchor="middle" class="small">• mysqldump</text>
+  <text x="145" y="522" text-anchor="middle" class="small">• tar wp_data</text>
+  <text x="145" y="540" text-anchor="middle" class="small">• rotate 7 days</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M230,190 C260,190 275,220 300,220"/>         <!-- browser → UFW -->
+  <path class="arrow" d="M230,285 C260,285 275,230 300,230"/>         <!-- SSH → UFW -->
+  <path class="arrow" d="M620,460 L700,460"/>                          <!-- wp → db -->
+  <path class="arrow" d="M490,525 L490,545"/>                          <!-- wp → vol -->
+  <path class="arrow" d="M830,525 L830,545"/>                          <!-- db → vol -->
+  <path class="arrow" d="M230,485 C260,485 275,460 330,460"/>          <!-- cron → docker -->
+
+  <!-- legend -->
+  <text x="50" y="675" class="small">Flow:  Browser → UFW(allow 8080) → WordPress container → MySQL container → db_data volume.  Cron runs backup script against both volumes nightly.</text>
+</svg>
