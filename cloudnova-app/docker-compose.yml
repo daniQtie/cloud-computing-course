@@ -1,5 +1,3 @@
-version: "3.9"
-
 # =============================================================================
 # CloudNova Technologies — Multi-tier stack
 # web (Next.js) + db (PostgreSQL 16) with persistent storage
