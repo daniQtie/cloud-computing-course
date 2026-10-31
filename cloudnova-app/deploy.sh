@@ -20,7 +20,28 @@ if ! command -v docker >/dev/null 2>&1; then
     sudo usermod -aG docker "$USER" || true
 fi
 docker --version
+
+# ---- 1b. Docker Compose plugin ----------------------------------------------
+if ! docker compose version >/dev/null 2>&1; then
+    step "Installing docker-compose-plugin"
+    sudo apt-get update -y
+    sudo apt-get install -y docker-compose-plugin || {
+        warn "apt install failed; trying standalone binary"
+        sudo mkdir -p /usr/local/lib/docker/cli-plugins
+        sudo curl -SL \
+          https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64 \
+          -o /usr/local/lib/docker/cli-plugins/docker-compose
+        sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+    }
+fi
 docker compose version
+
+# ---- 1c. UFW (install if missing) -------------------------------------------
+if ! command -v ufw >/dev/null 2>&1; then
+    step "Installing UFW"
+    sudo apt-get update -y
+    sudo apt-get install -y ufw
+fi
 
 # ---- 2. Env file -------------------------------------------------------------
 step "Preparing environment"
@@ -37,17 +58,13 @@ sudo docker compose ps
 
 # ---- 4. UFW firewall ---------------------------------------------------------
 step "Configuring UFW firewall"
-if command -v ufw >/dev/null 2>&1; then
-    sudo ufw --force reset
-    sudo ufw default deny incoming
-    sudo ufw default allow outgoing
-    sudo ufw allow 22/tcp     comment 'SSH'
-    sudo ufw allow 3000/tcp   comment 'CloudNova web'
-    sudo ufw --force enable
-    sudo ufw status verbose
-else
-    warn "UFW not installed; skipping firewall step"
-fi
+sudo ufw --force reset
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp     comment 'SSH'
+sudo ufw allow 3000/tcp   comment 'CloudNova web'
+sudo ufw --force enable
+sudo ufw status verbose
 
 # ---- 5. Backup script + cron -------------------------------------------------
 step "Installing backup automation"
