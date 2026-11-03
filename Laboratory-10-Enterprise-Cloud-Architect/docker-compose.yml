@@ -1,56 +1,56 @@
-version: "3.9"
-
 # =============================================================================
 # CloudNova Technologies - Enterprise Cloud Architect
-# Multi-tier stack: WordPress (web/app tier) + MySQL (data tier)
+# Multi-tier stack: Ghost (web/app tier) + PostgreSQL (data tier)
 # Persistent volumes ensure data survives VM reboots and container recreation.
 # =============================================================================
 
 services:
 
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     container_name: cloudnova_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 5s
       retries: 5
 
-  wordpress:
-    image: wordpress:6.5-apache
-    container_name: cloudnova_wp
+  web:
+    image: ghost:5-alpine
+    container_name: cloudnova_web
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8080:80"
+      - "3000:2368"
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
-      WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      url: http://localhost:3000
+      database__client: pg
+      database__connection__host: db
+      database__connection__port: 5432
+      database__connection__database: ${POSTGRES_DB}
+      database__connection__user: ${POSTGRES_USER}
+      database__connection__password: ${POSTGRES_PASSWORD}
     volumes:
-      - wp_data:/var/www/html
+      - ghost_content:/var/lib/ghost/content
     networks:
       - backend
       - frontend
 
 volumes:
-  db_data:
+  pg_data:
     driver: local
-  wp_data:
+  ghost_content:
     driver: local
 
 networks:
@@ -58,4 +58,3 @@ networks:
     driver: bridge
   backend:
     driver: bridge
-    internal: false
